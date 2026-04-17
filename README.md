@@ -187,20 +187,20 @@ npm install
 Create an environment file (commonly `.env`). This backend expects at least:
 
 ```env
-PORT=5000
-MONGO_URI=your_mongodb_connection_string
-
-ACCESS_TOKEN_SECRET=your_access_token_secret
-# (If your codebase uses refresh tokens, you may also need a refresh secret)
-# REFRESH_TOKEN_SECRET=your_refresh_token_secret
-
+PORT=7000
+MONGO_URI=
 CORS_ORIGIN=http://localhost:3000
-NODE_ENV=development
-```
+ACCESS_TOKEN_SECRET=
+ACCESS_TOKEN_EXPIRY=
+REFRESH_TOKEN_SECRET=
+REFRESH_TOKEN_EXPIRY=
 
-> Note: The DB connection code references `dotenv.config({ path: "./env" })` in `src/db/index.js`.
-> If you are using a standard `.env`, ensure your runtime loads it (your `dev` script already uses `-r dotenv/config`).
-> You can also create an `env` file (without extension) at the project root if you want to match that path.
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+
+
+```
 
 ### 3) Run the Server
 ```bash
