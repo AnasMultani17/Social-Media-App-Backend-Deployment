@@ -212,7 +212,7 @@ npm start
 ```
 
 Server starts on:
-- `http://localhost:5000` (by default)
+- `http://localhost:7000` (by default)
 
 ---
 
