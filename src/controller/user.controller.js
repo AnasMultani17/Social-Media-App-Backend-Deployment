@@ -10,6 +10,11 @@ import fs from "fs";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 
+const TEMP_USER_EMAIL = "temp@try.com";
+
+const isTempUserAccount = (user) =>
+  user?.email?.trim().toLowerCase() === TEMP_USER_EMAIL;
+
 const generateAccesssAndRefreshTokens = async (userId) => {
   try {
     const user = await User.findById(userId);
@@ -146,10 +151,10 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Password and confirm password is not matching");
   }
   const user = await User.findById(req.user?._id);
-  if (user.username == "TempUser") {
+  if (isTempUserAccount(user)) {
     throw new ApiError(
-      400,
-      "This Temp mail id is used by many users so changing password is not permitted Sorry!!"
+      403,
+      "Temp users are not authorized to change anything in the profile. Please use a permanent account."
     );
   }
 
@@ -175,6 +180,13 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
   if (!fullname || !email) {
     throw new ApiError(400, "All fields are required");
   }
+  const currentUser = await User.findById(req.user?._id);
+  if (isTempUserAccount(currentUser)) {
+    throw new ApiError(
+      403,
+      "Temp users are not authorized to change anything in the profile. Please use a permanent account."
+    );
+  }
   const user = await User.findByIdAndUpdate(
     req.user?._id,
     { $set: { fullname, email } },
@@ -188,6 +200,14 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
 const updateUserAvatar = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+
+    const currentUser = await User.findById(req.user?._id);
+    if (isTempUserAccount(currentUser)) {
+      return res.status(403).json({
+        error:
+          "Temp users are not authorized to change anything in the profile. Please use a permanent account.",
+      });
+    }
 
     const result = await uploadOnCloudinary(
       req.file.buffer,
@@ -205,6 +225,14 @@ const updateUserAvatar = async (req, res) => {
 const updateUsercoverimage = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+
+    const currentUser = await User.findById(req.user?._id);
+    if (isTempUserAccount(currentUser)) {
+      return res.status(403).json({
+        error:
+          "Temp users are not authorized to change anything in the profile. Please use a permanent account.",
+      });
+    }
 
     const result = await uploadOnCloudinary(
       req.file.buffer,
